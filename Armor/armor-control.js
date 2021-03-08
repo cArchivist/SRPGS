@@ -30,15 +30,21 @@ var overDamageReduce = function(virtualUnit, damageSustained) {
 }
 
  var ArmorControl = {
-     reduceArmor: null
+     reduceArmor: null,
+     getArm: function(unit) {
+        if (unit.custom.arm != null) {
+            return unit.custom.arm.value;
+        }
+        return 0;
+    }
  }
 
 // init ArmorControl based on config
 
 // this pattern eliminates mode calls at runtime, but may not be useful
 // if garbage collection doesn't remove unused functions
-if (ArmorConfig.mode == ARMOR_MODE.FIXEDDAMAGE) {
+if (ArmorConfig.damageMode == DAMAGE_MODE.FIXED) {
     ArmorControl.reduceArmor = armorFixedReduce
-} else if (ArmorConfig.mode == ARMOR_MODE.OVERDAMAGE) {
+} else if (ArmorConfig.damageMode == DAMAGE_MODE.OVERFLOW) {
     ArmorControl.reduceArmor = overDamageReduce
 }
