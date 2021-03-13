@@ -4,11 +4,13 @@
  * DAMAGE_MODE
  * FIXED -- if a unit takes damage, reduce armor by fixed amount defined at ArmorConfig.fixedDamage
  * OVER -- if a unit takes damage, reduce armor by damage taken
+ * FRACTION -- if a unit is hit, reduce armor by attacker's Atk/fractionDamage
  *  */ 
 
 var DAMAGE_MODE = {
     FIXED: 1,
-    OVERFLOW: 2
+    OVERFLOW: 2,
+    FRACTION: 3
 }
 
 /**
@@ -25,7 +27,8 @@ var HEAL_MODE = {
 }
 
 var ArmorConfig = {
-    fixedDamage: 1,
-    damageMode: DAMAGE_MODE.OVERFLOW,
+    fixedDamage: 1, //amount each hit does to armor
+    fractionDamage: 4, //amount to divide damage by
+    damageMode: DAMAGE_MODE.FRACTION,
     healMode: HEAL_MODE.MAP_END
 }

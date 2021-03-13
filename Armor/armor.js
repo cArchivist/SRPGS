@@ -1,7 +1,7 @@
 /** 
  * Armor Stat
  * 
- * Script by CrimeanArchivist
+ * Script by CrimeanArchivist and 2chang
  * 
  * Adds a unit parameter representing an armor value as a custom parameter set at `unit.custom.arm.value`.  This value is added
  * to Def/Res during combat and is reduced as the unit takes damage according to a function determined by configuration modes in 
@@ -27,6 +27,7 @@
 // Modify param namespace to make room for armor
 ParamType.ARM = 11
 ParamType.COUNT = 12
+var armorDamageDiv = 2;
 
 paramArrayAlias = ParamGroup._configureUnitParameters;
 ParamGroup._configureUnitParameters = function(groupArray) {
@@ -41,10 +42,11 @@ RealBonus.getArm = function(unit) {
 
 // TODO -- enable weapon bonuses like other stats
 ParamBonus.getArm = function(unit) {
+    var total = 0;
     if (unit.custom.arm != null) {
-        return unit.custom.arm.value;
+        total += unit.custom.arm.value;
     }
-    return 0;
+    return total;
 }
 
 // edit top window to include armor beneath HP
@@ -109,15 +111,13 @@ DamageCalculator.calculateDefense = function(active, passive, weapon, isCritical
     return def;
 }
 
-// Armor reduced when attack is evaluated
 
+
+// Armor reduced when attack is evaluated
 AttackEvaluator.ArmorReduction = defineObject(BaseAttackEvaluator, {
     evaluateAttackEntry: function(virtualActive, virtualPassive, attackEntry) {
-        if (virtualActive.hp > 0) {
-            ArmorControl.reduceArmor(virtualActive, attackEntry.damageActive);
-        }
-        if (virtualPassive.hp > 0) {
-            ArmorControl.reduceArmor(virtualPassive, attackEntry.damagePassive);
+        if (virtualPassive.hp > 0 && attackEntry.isHit) { //only call for passive or else it damages both
+            ArmorControl.reduceArmor(virtualPassive, virtualActive, attackEntry.damagePassive);
         }
     }
 })
