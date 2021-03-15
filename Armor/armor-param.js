@@ -9,7 +9,7 @@ UnitParameter.ARM = defineObject(BaseUnitParameter, {
         if (unit.custom.arm != null) {
             return unit.custom.arm.max + this.getItemArm(unit);
         }
-        return 1;    
+        return 0;    
     },
 
     // adjusts max and current value according to config
@@ -20,13 +20,13 @@ UnitParameter.ARM = defineObject(BaseUnitParameter, {
         return;
     },
 
-    //pull item.custom.arm.value from all items in inventory
+    //pull item.custom.arm.value from first item in inventory
     getItemArm: function(unit) {
         var i,item;
         var count = UnitItemControl.getPossessionItemCount(unit);
         for (i = 0; i < count; i++) {
             item = UnitItemControl.getItem(unit, i);
-            if(item.custom.arm != null) {
+            if(item.custom.arm != null && item.custom.arm.value > 0) {
                 return item.custom.arm.value;
             }
         }

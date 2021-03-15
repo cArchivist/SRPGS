@@ -3,15 +3,29 @@
 Adds a unit parameter representing an armor value as a custom object set at `unit.custom.arm`.  The object has four parameters:
 
 ```
-{
+{arm:{
     value: 3, //current value
     max: 5, // current maximum (upper limit, like HP)
     cap: 20, // highest possible maximum value
     growth: 45 // unit growth rate
-}
+}}
 ```  
 
 `value` is added to Def/Res during combat and is reduced as the unit takes damage according to a function determined by configuration modes in `armor-config.js`.  A unit's armor `value` is set to `max` in between maps.
+
+There is a parameter for weapons you can set at `weapon.custom.arm` which modifies how much damage you can deal to armor.
+```
+{arm:{
+    shear:1 //deal 1 extra damage to armor with this weapon
+}}
+```
+
+Additionally there is a custom skill using the keyword<> "Shear", it multiplies the amount of damage dealt to armor
+```
+{arm:{
+    shearmul:2 //deal double damage to armor
+}}
+```
 
 ### Possible Conflicts
 
