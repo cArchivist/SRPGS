@@ -15,6 +15,9 @@
  * Versions
  * 
  * 1.0 -- basic armor functionality with FIXEDDAMAGE and OVERDAMAGE reduction modes
+ * 1.1 -- added armor hp bar
+ * 1.2 -- FRACTION reduction mode added, functions expanded for future versions
+ * 1.3 -- weapon shear functionality added, shear skill added
  * 
  * Possible enhancements:
  *   - separate magic and physical armor values
@@ -27,7 +30,6 @@
 // Modify param namespace to make room for armor
 ParamType.ARM = 11
 ParamType.COUNT = 12
-var armorDamageDiv = 2;
 
 paramArrayAlias = ParamGroup._configureUnitParameters;
 ParamGroup._configureUnitParameters = function(groupArray) {

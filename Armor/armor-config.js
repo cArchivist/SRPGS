@@ -28,7 +28,8 @@ var HEAL_MODE = {
 
 var ArmorConfig = {
     fixedDamage: 1, //amount each hit does to armor
-    fractionDamage: 4, //amount to divide damage by
-    damageMode: DAMAGE_MODE.FRACTION,
+    fractionDamage: 4, //amount to divide armor damage by
+    shearOnly: true, // set to true to only damage armor with weapons that have a shear or shearmul value
+    damageMode: DAMAGE_MODE.FIXED,
     healMode: HEAL_MODE.MAP_END
 }

@@ -2,48 +2,111 @@
  * Controller for key armor methods + reduce modes
  */
 
+
+
 var armorFixedReduce = function(virtualUnit, virtualPassiveUnit, damageSustained) {
     unit = virtualUnit.unitSelf;
-    if (unit.custom.arm != null) {
-        if (damageSustained != 0) {
-            unitArmor = unit.custom.arm.value;
-            if (unitArmor != 0) {
-                unitArmor -= ArmorConfig.fixedDamage;
+    var atkweapon = ItemControl.getEquippedWeapon(virtualPassiveUnit.unitSelf);
+    var atkskill = SkillControl.getPossessionCustomSkill(virtualPassiveUnit.unitSelf, "Shear");
+    if (unit.custom.arm != null && unit.custom.arm.value != 0) {
+        var unitArmor, v;
+        if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear >= 0) {
+            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                v = (ArmorConfig.fixedDamage + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
             }
-            if (unitArmor < 0) {
-                unitArmor = 0;
+            else {
+                v = ArmorConfig.fixedDamage + atkweapon.custom.arm.shear;
             }
-            unit.custom.arm.value = unitArmor;
+            unitArmor = unit.custom.arm.value - v;
+            handleReduction(unitArmor);
         }
+        else {
+            if(!ArmorConfig.shearOnly) {
+                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                    v = ArmorConfig.fixedDamage * atkskill.custom.arm.shearmul;
+                }
+                else {
+                    v = ArmorConfig.fixedDamage;
+                }
+                unitArmor = unit.custom.arm.value - ArmorConfig.fixedDamage;
+                handleReduction(unitArmor);
+            }     
+        } 
     }
 }
 
 var overDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSustained) {
     unit = virtualUnit.unitSelf;
+    var atkweapon = ItemControl.getEquippedWeapon(virtualPassiveUnit.unitSelf);
+    var atkskill = SkillControl.getPossessionCustomSkill(virtualPassiveUnit.unitSelf, "Shear");
     if (unit.custom.arm != null && unit.custom.arm.value != 0) {
-        unitArmor = unit.custom.arm.value - damageSustained;
-        if (unitArmor < 0) {
-            unitArmor = 0;
+        var unitArmor, v;
+        if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear >= 0) {
+            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                v = (damageSustained + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
+            }
+            else {
+                v = damageSustained + atkweapon.custom.arm.shear;
+            }
+            unitArmor = unit.custom.arm.value - v;
+            handleReduction(unitArmor);
         }
-        unit.custom.arm.value = unitArmor;
+        else {
+            if(!ArmorConfig.shearOnly) {
+                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                    v = (damageSustained) * atkskill.custom.arm.shearmul;
+                }
+                else {
+                    v = damageSustained;
+                }
+                unitArmor = unit.custom.arm.value - v;
+                handleReduction(unitArmor);
+            }  
+        }
     }
 }
 
 var fractionDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSustained) {
     unit = virtualUnit.unitSelf;
-    attacker = virtualPassiveUnit.unitSelf;
-    var pow = AbilityCalculator.getPower(attacker, ItemControl.getEquippedWeapon(attacker)) + CompatibleCalculator.getPower(attacker, unit, ItemControl.getEquippedWeapon(attacker));
-    //root.log("armor damage = "+ Math.round(pow/ArmorConfig.fractionDamage));
+    var attacker = virtualPassiveUnit.unitSelf;
+    var atkweapon = ItemControl.getEquippedWeapon(attacker);
+    var atkskill = SkillControl.getPossessionCustomSkill(attacker, "Shear");
+    var pow = AbilityCalculator.getPower(attacker, atkweapon) + CompatibleCalculator.getPower(attacker, unit, atkweapon);
     if (unit.custom.arm != null && unit.custom.arm.value != 0) {
-        unitArmor = unit.custom.arm.value - Math.round(pow/ArmorConfig.fractionDamage);
-        if (unitArmor < 0) {
-            unitArmor = 0;
+        var unitArmor, v;
+        if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear > 0) {
+            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                v = (Math.round(pow/ArmorConfig.fractionDamage) + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
+            }
+            else {
+                v = Math.round(pow/ArmorConfig.fractionDamage) + atkweapon.custom.arm.shear;
+            }
+            unitArmor = unit.custom.arm.value - v;
+            handleReduction(unitArmor);
+        } 
+        else {
+            if(!ArmorConfig.shearOnly) {
+                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                    v = (Math.round(pow/ArmorConfig.fractionDamage)) * atkskill.custom.arm.shearmul;
+                }
+                else {
+                    v = Math.round(pow/ArmorConfig.fractionDamage);
+                }
+                unitArmor = unit.custom.arm.value - v;
+                handleReduction(unitArmor);
+            }
         }
-        unit.custom.arm.value = unitArmor;
     }
 }
 
- var ArmorControl = {
+var handleReduction = function(unitArmor){ //just to clean it up a bit
+    if (unitArmor < 0) {
+        unitArmor = 0;
+    }
+    unit.custom.arm.value = unitArmor;
+}
+
+var ArmorControl = {
     reduceArmor: null,
     getArm: function(unit) {
         if (unit.custom.arm != null) {
@@ -56,13 +119,13 @@ var fractionDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSusta
         if (passiveUnit.custom.arm != null) {
             if (value > 0) {
                 unitArmor = passiveUnit.custom.arm.value;
-                if (unitArmor < UnitParameter.ARM.getUnitValue(unit)) {
+                if (unitArmor < UnitParameter.ARM.getUnitValue(passiveUnit)) {
                     unitArmor += value;
-                    if (unitArmor > UnitParameter.ARM.getUnitValue(unit)) {
-                        unitArmor = UnitParameter.ARM.getUnitValue(unit);
+                    if (unitArmor > UnitParameter.ARM.getUnitValue(passiveUnit)) {
+                        unitArmor = UnitParameter.ARM.getUnitValue(passiveUnit);
                     }
                 }
-                unit.custom.arm.value = unitArmor;
+                passiveUnit.custom.arm.value = unitArmor;
             }
         }
         return;
