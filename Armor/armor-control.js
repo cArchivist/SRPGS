@@ -11,7 +11,7 @@ var armorFixedReduce = function(virtualUnit, virtualPassiveUnit, damageSustained
     if (unit.custom.arm != null && unit.custom.arm.value != 0) {
         var unitArmor, v;
         if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear >= 0) {
-            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+            if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                 v = (ArmorConfig.fixedDamage + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
             }
             else {
@@ -22,7 +22,7 @@ var armorFixedReduce = function(virtualUnit, virtualPassiveUnit, damageSustained
         }
         else {
             if(!ArmorConfig.shearOnly) {
-                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                     v = ArmorConfig.fixedDamage * atkskill.custom.arm.shearmul;
                 }
                 else {
@@ -42,7 +42,7 @@ var overDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSustained
     if (unit.custom.arm != null && unit.custom.arm.value != 0) {
         var unitArmor, v;
         if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear >= 0) {
-            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+            if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                 v = (damageSustained + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
             }
             else {
@@ -53,7 +53,7 @@ var overDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSustained
         }
         else {
             if(!ArmorConfig.shearOnly) {
-                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                     v = (damageSustained) * atkskill.custom.arm.shearmul;
                 }
                 else {
@@ -75,7 +75,7 @@ var fractionDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSusta
     if (unit.custom.arm != null && unit.custom.arm.value != 0) {
         var unitArmor, v;
         if(atkweapon.custom.arm != null && atkweapon.custom.arm.shear > 0) {
-            if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+            if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                 v = (Math.round(pow/ArmorConfig.fractionDamage) + atkweapon.custom.arm.shear) * atkskill.custom.arm.shearmul;
             }
             else {
@@ -86,7 +86,7 @@ var fractionDamageReduce = function(virtualUnit, virtualPassiveUnit, damageSusta
         } 
         else {
             if(!ArmorConfig.shearOnly) {
-                if(atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
+                if(atkskill != null && atkskill.custom.arm != null && atkskill.custom.arm.shearmul > 0) {
                     v = (Math.round(pow/ArmorConfig.fractionDamage)) * atkskill.custom.arm.shearmul;
                 }
                 else {
@@ -117,6 +117,7 @@ var ArmorControl = {
 
     healArm: function(activeUnit, passiveUnit, value) { //blacksmith class function
         if (passiveUnit.custom.arm != null) {
+            root.log("healArm called");
             if (value > 0) {
                 unitArmor = passiveUnit.custom.arm.value;
                 if (unitArmor < UnitParameter.ARM.getUnitValue(passiveUnit)) {
