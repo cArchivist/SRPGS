@@ -18,6 +18,7 @@
  * 1.1 -- added armor hp bar
  * 1.2 -- FRACTION reduction mode added, functions expanded for future versions
  * 1.3 -- weapon shear functionality added, shear skill added
+ * 1.4 -- 
  * 
  * Possible enhancements:
  *   - separate magic and physical armor values
@@ -91,28 +92,33 @@ UnitMenuTopWindow.drawWindowContent = function(x, y) {
 
 // Make armor reduce damage
 
-DamageCalculator.calculateDefense = function(active, passive, weapon, isCritical, totalStatus, trueHitValue) {
-    var def;
-		
-    if (this.isNoGuard(active, passive, weapon, isCritical, trueHitValue)) {
-        return 0;
+DamageCalculator.calculateDamage = function(active, passive, weapon, isCritical, activeTotalStatus, passiveTotalStatus, trueHitValue) {
+    var pow, def, damage;
+    
+    if (this.isHpMinimum(active, passive, weapon, isCritical, trueHitValue)) {
+        return -1;
     }
     
-    if (Miscellaneous.isPhysicsBattle(weapon)) {
-        // Physical attack or Bow attack.
-        def = RealBonus.getDef(passive);
-    }
-    else {
-        // Magic attack
-        def = RealBonus.getMdf(passive);
+    pow = this.calculateAttackPower(active, passive, weapon, isCritical, activeTotalStatus, trueHitValue);
+    def = this.calculateDefense(active, passive, weapon, isCritical, passiveTotalStatus, trueHitValue);
+    
+    damage = pow - def;
+    // armor-based adjustment
+    // root.log("pre-adjusted damage: " + damage)
+    damage = ArmorControl.adjustDamage(damage, RealBonus.getArm(passive))
+    // root.log("after armor: " + damage)
+    if (this.isHalveAttack(active, passive, weapon, isCritical, trueHitValue)) {
+        if (!this.isHalveAttackBreak(active, passive, weapon, isCritical, trueHitValue)) {
+            damage = Math.floor(damage / 2);
+        }
     }
     
-    def += CompatibleCalculator.getDefense(passive, active, ItemControl.getEquippedWeapon(passive)) + SupportCalculator.getDefense(totalStatus);
-    def += RealBonus.getArm(passive);
+    if (this.isCritical(active, passive, weapon, isCritical, trueHitValue)) {
+        damage = Math.floor(damage * this.getCriticalFactor());
+    }
     
-    return def;
+    return this.validValue(active, passive, weapon, damage);
 }
-
 
 
 // Armor reduced when attack is evaluated
