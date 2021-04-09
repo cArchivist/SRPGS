@@ -29,7 +29,7 @@ Additionally there is a custom skill using the keyword<> "Shear", it multiplies 
 
 ### Possible Conflicts
 
-- overwrites `DamageCalculator.calculateDefense`
+- overwrites `DamageCalculator.calculateDamage`
 - overwrites `NormalAttackOrderBuilder._configureEvaluator`
     - need to experiment with aliasing this one
 - includes numerous stat display changes that may be incompatible with StatBar plugin
@@ -40,7 +40,7 @@ Additionally there is a custom skill using the keyword<> "Shear", it multiplies 
 
 - ~~enable armor growth~~
 - separate magic and physical armor values
-- `ALWAYSREDUCE` damage mode -- reduce armor whenever hit, not just damaged
+- ~~`ALWAYSREDUCE` damage mode -- reduce armor whenever hit, not just damaged~~
 - ~~optionally refresh armor at the end of maps / on entering base~~
     - ~~relatedly, store current value and base value in different places for purposes of refreshing at points~~
 - enable item + weapon bonuses like other stats
@@ -57,6 +57,17 @@ Additionally there is a custom skill using the keyword<> "Shear", it multiplies 
 - display as `currentValue / maximumValue` in unit window
 - include stat gauge
 - enable armor refresh on map transition
+
+#### v1.2
+- FRACTION reduction mode and function expansion
+
+#### v1.3
+- added "shear", mechanic for interplay between weapons / skills and armor reduction
+
+#### v1.4
+- added two additional damage reduction methods
+    - percent based, where damage is reduced by configured percent as long as any armor is intact
+    - fixed, where damage is reduced by a set amount as long as any armor is intact
 
 ### File Breakdown
 
